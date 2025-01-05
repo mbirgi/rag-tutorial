@@ -33,7 +33,8 @@ def create_rag_chain(chunks):
     embeddings = embedding_model.encode([chunk.page_content for chunk in chunks])
 
     # Create FAISS vector store
-    doc_search = FAISS.from_documents(chunks, embeddings)
+    doc_search = FAISS(embedding_model)
+    doc_search.add_documents(chunks, embeddings)
     retriever = doc_search.as_retriever(
         search_type="similarity", search_kwargs={"k": 5}
     )
