@@ -4,7 +4,7 @@ from langchain.prompts import PromptTemplate
 from langchain_community.vectorstores import FAISS
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from transformers import pipeline
 
 # Load the API key from env variables
 load_dotenv()
@@ -25,17 +25,22 @@ def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
 def create_rag_chain(chunks):
-    embeddings = OpenAIEmbeddings(api_key=api_key)
-    doc_search = FAISS.from_documents(chunks, embeddings)
+    doc_search = FAISS.from_documents(chunks)
     retriever = doc_search.as_retriever(
         search_type="similarity", search_kwargs={"k": 5}
     )
-    llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
+
+    # Use Hugging Face pipeline for text generation
+    generator = pipeline('text-generation', model='EleutherAI/gpt-neo-2.7B')
+
+    def generate_answer(prompt):
+        response = generator(prompt, max_length=512, num_return_sequences=1)
+        return response[0]['generated_text']
 
     rag_chain = (
         {"context": retriever | format_docs, "question": RunnablePassthrough()}
         | PROMPT
-        | llm
+        | generate_answer
         | StrOutputParser()
     )
 
