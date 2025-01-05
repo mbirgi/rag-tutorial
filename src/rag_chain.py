@@ -6,6 +6,7 @@ from langchain_core.runnables import RunnablePassthrough
 from transformers import pipeline
 from sentence_transformers import SentenceTransformer
 from faiss import IndexFlatL2
+from langchain.docstore.in_memory import InMemoryDocstore
 from langchain.docstore.document import Document
 
 # Load the API key from env variables
