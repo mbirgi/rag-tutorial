@@ -13,8 +13,6 @@ from langchain.docstore.document import Document
 # Load the API key from env variables
 load_dotenv()
 
-api_key = os.getenv("OPENAI_API_KEY")
-
 RAG_PROMPT_TEMPLATE = """
 You are a helpful coding assistant that can answer questions about the provided context. The context is usually a PDF document or an image (screenshot) of a code file. Augment your answers with code snippets from the context if necessary.
 
