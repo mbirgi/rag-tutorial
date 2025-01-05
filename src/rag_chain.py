@@ -6,6 +6,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from transformers import pipeline
 from sentence_transformers import SentenceTransformer
+from faiss import IndexFlatL2
 
 # Load the API key from env variables
 load_dotenv()
@@ -32,9 +33,13 @@ def create_rag_chain(chunks):
     # Generate embeddings for the documents
     embeddings = embedding_model.encode([chunk.page_content for chunk in chunks])
 
+    # Create FAISS index
+    dimension = embeddings.shape[1]
+    index = IndexFlatL2(dimension)
+    index.add(embeddings)
+
     # Create FAISS vector store
-    doc_search = FAISS(embedding_model)
-    doc_search.add_documents(chunks, embeddings)
+    doc_search = FAISS(index, chunks, list(range(len(chunks))))
     retriever = doc_search.as_retriever(
         search_type="similarity", search_kwargs={"k": 5}
     )
