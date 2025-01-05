@@ -8,3 +8,4 @@ faiss-cpu
 pypdf
 transformers
 torch
+sentence-transformers

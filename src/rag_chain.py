@@ -5,6 +5,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from transformers import pipeline
+from sentence_transformers import SentenceTransformer
 
 # Load the API key from env variables
 load_dotenv()
@@ -25,7 +26,14 @@ def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
 def create_rag_chain(chunks):
-    doc_search = FAISS.from_documents(chunks)
+    # Load the embedding model
+    embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+
+    # Generate embeddings for the documents
+    embeddings = embedding_model.encode([chunk.page_content for chunk in chunks])
+
+    # Create FAISS vector store
+    doc_search = FAISS.from_documents(chunks, embeddings)
     retriever = doc_search.as_retriever(
         search_type="similarity", search_kwargs={"k": 5}
     )
