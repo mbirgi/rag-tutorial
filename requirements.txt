@@ -11,3 +11,4 @@ torch
 torchvision 
 torchaudio
 sentence-transformers
+sympy==1.13.1
