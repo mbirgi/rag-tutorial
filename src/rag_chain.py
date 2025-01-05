@@ -44,8 +44,11 @@ def create_rag_chain(chunks):
     documents = [Document(page_content=chunk.page_content) for chunk in chunks]
     docstore = InMemoryDocstore(documents)
 
+    # Create index to docstore ID mapping
+    index_to_docstore_id = {i: i for i in range(len(chunks))}
+
     # Create FAISS vector store
-    doc_search = FAISS(index, docstore, list(range(len(chunks))))
+    doc_search = FAISS(index, docstore, index_to_docstore_id)
     retriever = doc_search.as_retriever(
         search_type="similarity", search_kwargs={"k": 5}
     )
