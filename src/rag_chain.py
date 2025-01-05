@@ -45,7 +45,7 @@ def create_rag_chain(chunks):
     docstore = InMemoryDocstore(documents)
 
     # Create index to docstore ID mapping
-    index_to_docstore_id = {i: i for i in range(len(chunks))}
+    index_to_docstore_id = {i: str(i) for i in range(len(chunks))}
 
     # Create FAISS vector store
     doc_search = FAISS(index, docstore, index_to_docstore_id)
