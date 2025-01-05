@@ -45,7 +45,7 @@ def create_rag_chain(chunks):
     index_to_docstore_id = {i: str(i) for i in range(len(chunks))}
 
     # Create FAISS vector store
-    doc_search = FAISS(index, docstore, index_to_docstore_id)
+    doc_search = FAISS(embedding_model.encode, index, docstore, index_to_docstore_id)
     retriever = doc_search.as_retriever(
         search_type="similarity", search_kwargs={"k": 5}
     )
